@@ -2,20 +2,20 @@ package controller;
 
 import dao.UserDAO;
 import model.User;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/register")
-public class RegistrationServlet extends HttpServlet{
+public class RegisterServlet extends HttpServlet {
+
     private UserDAO userDAO;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         userDAO = new UserDAO();
     }
 
@@ -32,7 +32,7 @@ public class RegistrationServlet extends HttpServlet{
                 email == null || email.trim().isEmpty() ||
                 password == null || password.trim().isEmpty()) {
 
-            request.setAttribute("errorMessage", "Please fill in all required fields.");
+            request.setAttribute("errorMessage", "Please fill all required fields.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -44,9 +44,9 @@ public class RegistrationServlet extends HttpServlet{
         user.setPassword(password);
         user.setRole("user");
 
-        boolean isRegistered = userDAO.registerUser(user);
+        boolean success = userDAO.registerUser(user);
 
-        if (isRegistered) {
+        if (success) {
             response.sendRedirect("login.jsp");
         } else {
             request.setAttribute("errorMessage", "Registration failed. Email may already exist.");
