@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3c52ca1e-b881-4065-9790-ecce7ce66b88" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LaundryBookingSystem.iml" beforeDir="false" afterPath="$PROJECT_DIR$/LaundryBookingSystem.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/LoginServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/RegistrationServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/RegisterServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/UserDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/admin/dashboard.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/admin/dashboard.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/login.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/login.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/register.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/register.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/user/dashboard.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/user/dashboard.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/vendor/dashboard.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/vendor/dashboard.jsp" afterDir="false" />
     </list>
@@ -43,29 +37,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;jsp-ui-setup&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/aasish/Documents/BSC hons Computing /2nd Year /Modules/Advance Programming and Technologies/LaundryBookingSystem&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/aasish/Documents/BSC hons Computing /2nd Year /Modules/Advance Programming and Technologies/LaundryBookingSystem/src/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "false",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "jsp-ui-setup",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/aasish/Documents/BSC hons Computing /2nd Year /Modules/Advance Programming and Technologies/LaundryBookingSystem",
+    "onboarding.tips.debug.path": "/Users/aasish/Documents/BSC hons Computing /2nd Year /Modules/Advance Programming and Technologies/LaundryBookingSystem/src/Main.java",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
