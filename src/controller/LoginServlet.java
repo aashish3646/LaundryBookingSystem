@@ -17,7 +17,7 @@ public class LoginServlet extends HttpServlet {
     private UserDAO userDAO;
 
     @Override
-    public void init() {
+    public void init() throws ServletException {
         userDAO = new UserDAO();
     }
 
@@ -28,29 +28,48 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (email == null || email.trim().isEmpty() ||
-                password == null || password.trim().isEmpty()) {
+        if (email == null) {
+            email = "";
+        }
+        if (password == null) {
+            password = "";
+        }
 
+        email = email.trim();
+        password = password.trim();
+
+        if (email.isEmpty() || password.isEmpty()) {
             request.setAttribute("errorMessage", "Email and password are required.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
 
-        User user = userDAO.loginUser(email, password);
+        try {
+            User user = userDAO.loginUser(email, password);
 
-        if (user != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("loggedInUser", user);
+            if (user != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("loggedInUser", user);
+                session.setAttribute("userId", user.getUserId());
+                session.setAttribute("userName", user.getName());
+                session.setAttribute("userRole", user.getRole());
 
-            if ("admin".equalsIgnoreCase(user.getRole())) {
-                response.sendRedirect("admin/dashboard.jsp");
-            } else if ("vendor".equalsIgnoreCase(user.getRole())) {
-                response.sendRedirect("vendor/dashboard.jsp");
+                if ("admin".equalsIgnoreCase(user.getRole())) {
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                } else if ("vendor".equalsIgnoreCase(user.getRole())) {
+                    response.sendRedirect(request.getContextPath() + "/vendor/dashboard.jsp");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/user/dashboard.jsp");
+                }
+
             } else {
-                response.sendRedirect("user/dashboard.jsp");
+                request.setAttribute("errorMessage", "Invalid email or password.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
             }
-        } else {
-            request.setAttribute("errorMessage", "Invalid email or password.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Something went wrong while logging in.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
