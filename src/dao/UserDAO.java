@@ -1,10 +1,15 @@
 package dao;
 
 import model.User;
+import util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 
 public class UserDAO {
 
@@ -26,7 +31,7 @@ public class UserDAO {
             insertStmt.setString(1, user.getName());
             insertStmt.setString(2, user.getEmail());
             insertStmt.setString(3, user.getPhone());
-            insertStmt.setString(4, user.getPassword());
+            insertStmt.setString(4, hashPassword(user.getPassword()));
             insertStmt.setString(5, user.getRole());
 
             int rows = insertStmt.executeUpdate();
@@ -45,7 +50,7 @@ public class UserDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, email);
-            stmt.setString(2, password);
+            stmt.setString(2, hashPassword(password));
 
             ResultSet rs = stmt.executeQuery();
 
@@ -65,5 +70,15 @@ public class UserDAO {
         }
 
         return null;
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,15 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    Object loggedInUser = session.getAttribute("loggedInUser");
-    if (loggedInUser == null) {
-        response.sendRedirect("../login.jsp");
-        return;
-    }
-%>
 <html>
 <head>
     <title>Admin Dashboard - QuickWash</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
     <h1>QuickWash - Admin Dashboard</h1>
@@ -21,7 +14,7 @@
         <a href="manage-services.jsp">Manage Services</a><br><br>
         <a href="all-orders.jsp">View All Orders</a><br><br>
         <a href="reports.jsp">Reports</a><br><br>
-        <a href="../logout">Logout</a>
+        <a href="${pageContext.request.contextPath}/logout">Logout</a>
     </div>
 </body>
 </html>

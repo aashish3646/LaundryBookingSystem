@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>QuickWash Login</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
     <div class="form-container">
@@ -24,7 +24,7 @@
             <label>Password:</label><br>
             <input type="password" name="password" placeholder="Enter your password" required><br><br>
 
-            <button type="submit">Login</button>
+            <button type="submit" class="btn">Login</button>
         </form>
 
         <p>

@@ -2,13 +2,19 @@
 <html>
 <head>
     <title>Laundry Booking System</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
 
-<h1>Welcome to Laundry Booking System</h1>
+<div class="landing-container">
+    <h1>Welcome to QuickWash</h1>
+    <p>Premium Laundry Booking & Pickup Management</p>
 
-<a href="login.jsp">Login</a><br>
-<a href="register.jsp">Register</a>
+    <div class="actions">
+        <a href="login.jsp" class="btn">Login</a>
+        <a href="register.jsp" class="btn btn-secondary">Register</a>
+    </div>
+</div>
 
 </body>
 </html>
