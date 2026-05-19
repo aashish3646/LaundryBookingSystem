@@ -37,12 +37,14 @@ public class LoginServlet extends HttpServlet {
         User user = userDAO.loginUser(email.trim(), password);
 
         if (user == null) {
+            System.out.println("LOGIN FAILED: User not found or inactive for email: " + email);
             request.setAttribute("error", "Invalid email or password, or your account is inactive.");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
         if (!"approved".equals(user.getApprovalStatus())) {
+            System.out.println("LOGIN REJECTED: User status is " + user.getApprovalStatus() + " for email: " + email);
             String msg = "pending".equals(user.getApprovalStatus()) 
                 ? "Your account is awaiting administrator approval." 
                 : "Your registration request was rejected. Please contact support.";
@@ -50,6 +52,8 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
+
+        System.out.println("LOGIN SUCCESS: User " + user.getEmail() + " logged in as " + user.getRole());
 
         HttpSession session = request.getSession();
         session.setAttribute("userId", user.getUserId());
