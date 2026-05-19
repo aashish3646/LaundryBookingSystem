@@ -29,7 +29,7 @@ public class UserDAO {
     }
 
     public boolean registerUser(User user) {
-        String approvalStatus = "user".equals(user.getRole()) ? "approved" : "pending";
+        String approvalStatus = ("user".equals(user.getRole()) || "vendor".equals(user.getRole())) ? "approved" : "pending";
         String sql = "INSERT INTO users (name, email, phone, password, role, status, approval_status) VALUES (?, ?, ?, ?, ?, 'active', ?)";
 
         try (Connection conn = DBConnection.getConnection();
