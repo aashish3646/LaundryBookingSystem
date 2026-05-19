@@ -28,11 +28,16 @@ public class VendorController extends HttpServlet {
             return;
         }
 
-        if (!isAdmin(request, response)) {
+        String action = getAction(request);
+
+        if ("ajax-search".equals(action)) {
+            ajaxSearch(request, response);
             return;
         }
 
-        String action = getAction(request);
+        if (!isAdmin(request, response)) {
+            return;
+        }
         switch (action) {
             case "new":
                 request.setAttribute("vendor", new Vendor());
