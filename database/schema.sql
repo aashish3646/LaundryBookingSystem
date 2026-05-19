@@ -108,7 +108,7 @@ CREATE TABLE feedback (
 );
 
 INSERT INTO users (name, email, password, phone, role, status, approval_status) VALUES
-('Aashish Ghimire', 'admin@quickwash.com', SHA2('admin123', 256), '9800000001', 'admin', 'active', 'approved'),
+('System Administrator', 'admin@quickwash.com', SHA2('admin123', 256), '9800000001', 'admin', 'active', 'approved'),
 ('Susmita Rai', 'susmita@example.com', SHA2('user123', 256), '9800000002', 'user', 'active', 'approved'),
 ('Nischal Karki', 'vendor@quickwash.com', SHA2('vendor123', 256), '9800000003', 'vendor', 'active', 'pending');
 
