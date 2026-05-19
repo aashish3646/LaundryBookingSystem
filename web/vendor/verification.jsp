@@ -52,89 +52,85 @@
                         </ul>
                     </div>
                 </div>
-            <% } else if (vendor != null && "rejected".equals(vendor.getApprovalStatus())) { %>
-                <div class="status-card rejected">
-                    <div class="status-icon">❌</div>
-                    <h2>Profile Rejected</h2>
-                    <p>Your vendor verification request was rejected by the administrator.</p>
-                    <% if (vendor.getAdminRemarks() != null && !vendor.getAdminRemarks().isEmpty()) { %>
-                        <div class="admin-remarks">
-                            <strong>Admin Remarks:</strong>
-                            <p><%= vendor.getAdminRemarks() %></p>
-                        </div>
-                    <% } %>
-                    <p class="mt-2">You can update your details and resubmit the verification form below.</p>
-                </div>
-                <!-- Show form again for resubmission -->
-                <% renderForm(vendor, contextPath, out); %>
             <% } else { %>
-                <div class="info-card">
-                    <h2>Complete Your Profile</h2>
-                    <p>To start receiving laundry bookings, you must complete your vendor verification profile. Please provide accurate information and upload a valid identity or business document.</p>
-                </div>
-                <% renderForm(vendor, contextPath, out); %>
+                <% if (vendor != null && "rejected".equals(vendor.getApprovalStatus())) { %>
+                    <div class="status-card rejected">
+                        <div class="status-icon">❌</div>
+                        <h2>Profile Rejected</h2>
+                        <p>Your vendor verification request was rejected by the administrator.</p>
+                        <% if (vendor.getAdminRemarks() != null && !vendor.getAdminRemarks().isEmpty()) { %>
+                            <div class="admin-remarks">
+                                <strong>Admin Remarks:</strong>
+                                <p><%= vendor.getAdminRemarks() %></p>
+                            </div>
+                        <% } %>
+                        <p class="mt-2">You can update your details and resubmit the verification form below.</p>
+                    </div>
+                <% } else { %>
+                    <div class="info-card">
+                        <h2>Complete Your Profile</h2>
+                        <p>To start receiving laundry bookings, you must complete your vendor verification profile. Please provide accurate information and upload a valid identity or business document.</p>
+                    </div>
+                <% } %>
+
+                <% 
+                    String vName = (vendor != null) ? vendor.getVendorName() : "";
+                    String oName = (vendor != null) ? vendor.getOwnerName() : "";
+                    String area = (vendor != null) ? vendor.getArea() : "";
+                    String contact = (vendor != null) ? vendor.getContact() : "";
+                    String sType = (vendor != null) ? vendor.getServiceType() : "";
+                    String pRange = (vendor != null) ? vendor.getPriceRange() : "";
+                    String dType = (vendor != null) ? vendor.getDocumentType() : "";
+                %>
+                <section class="form-card wide">
+                    <h2>Verification Details</h2>
+                    <form action="<%= contextPath %>/vendor/upload-document" method="post" enctype="multipart/form-data" class="form two-column">
+                        <div class="form-group">
+                            <label for="vendor_name">Laundry Business Name</label>
+                            <input type="text" id="vendor_name" name="vendor_name" value="<%= vName %>" required placeholder="e.g. Nischal Fresh Wash">
+                        </div>
+                        <div class="form-group">
+                            <label for="owner_name">Owner Full Name</label>
+                            <input type="text" id="owner_name" name="owner_name" value="<%= oName %>" required placeholder="e.g. Nischal Karki">
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Service Area / Location</label>
+                            <input type="text" id="area" name="area" value="<%= area %>" required placeholder="e.g. Dharan-10, Sunsari">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact Number</label>
+                            <input type="text" id="contact" name="contact" value="<%= contact %>" required placeholder="e.g. 9841XXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label for="service_type">Service Types Offered</label>
+                            <input type="text" id="service_type" name="service_type" value="<%= sType %>" required placeholder="e.g. Wash and Iron, Dry Cleaning">
+                        </div>
+                        <div class="form-group">
+                            <label for="price_range">Approximate Price Range</label>
+                            <input type="text" id="price_range" name="price_range" value="<%= pRange %>" required placeholder="e.g. Rs. 150 - Rs. 500">
+                        </div>
+                        <div class="form-group">
+                            <label for="document_type">Document Type</label>
+                            <select id="document_type" name="document_type" required>
+                                <option value="" disabled <%= dType.isEmpty() ? "selected" : "" %>>Select Document Type</option>
+                                <option value="Citizenship" <%= "Citizenship".equals(dType) ? "selected" : "" %>>Citizenship (Nagarikta)</option>
+                                <option value="PAN Card" <%= "PAN Card".equals(dType) ? "selected" : "" %>>PAN / VAT Certificate</option>
+                                <option value="Business License" <%= "Business License".equals(dType) ? "selected" : "" %>>Business Registration License</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="document">Upload Identity/Business Document (PDF/JPG/PNG, Max 2MB)</label>
+                            <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
+                        </div>
+                        
+                        <div class="form-span mt-2">
+                            <button type="submit" class="btn btn-primary">Submit for Verification</button>
+                        </div>
+                    </form>
+                </section>
             <% } %>
         </section>
     </main>
 </div>
-
-<%! 
-    void renderForm(Vendor vendor, String contextPath, jakarta.servlet.jsp.JspWriter out) throws java.io.IOException {
-        String vName = (vendor != null) ? vendor.getVendorName() : "";
-        String oName = (vendor != null) ? vendor.getOwnerName() : "";
-        String area = (vendor != null) ? vendor.getArea() : "";
-        String contact = (vendor != null) ? vendor.getContact() : "";
-        String sType = (vendor != null) ? vendor.getServiceType() : "";
-        String pRange = (vendor != null) ? vendor.getPriceRange() : "";
-        String dType = (vendor != null) ? vendor.getDocumentType() : "";
-%>
-    <section class="form-card wide">
-        <h2>Verification Details</h2>
-        <form action="<%= contextPath %>/vendor/upload-document" method="post" enctype="multipart/form-data" class="form two-column">
-            <div class="form-group">
-                <label for="vendor_name">Laundry Business Name</label>
-                <input type="text" id="vendor_name" name="vendor_name" value="<%= vName %>" required placeholder="e.g. Nischal Fresh Wash">
-            </div>
-            <div class="form-group">
-                <label for="owner_name">Owner Full Name</label>
-                <input type="text" id="owner_name" name="owner_name" value="<%= oName %>" required placeholder="e.g. Nischal Karki">
-            </div>
-            <div class="form-group">
-                <label for="area">Service Area / Location</label>
-                <input type="text" id="area" name="area" value="<%= area %>" required placeholder="e.g. Dharan-10, Sunsari">
-            </div>
-            <div class="form-group">
-                <label for="contact">Contact Number</label>
-                <input type="text" id="contact" name="contact" value="<%= contact %>" required placeholder="e.g. 9841XXXXXX">
-            </div>
-            <div class="form-group">
-                <label for="service_type">Service Types Offered</label>
-                <input type="text" id="service_type" name="service_type" value="<%= sType %>" required placeholder="e.g. Wash and Iron, Dry Cleaning">
-            </div>
-            <div class="form-group">
-                <label for="price_range">Approximate Price Range</label>
-                <input type="text" id="price_range" name="price_range" value="<%= pRange %>" required placeholder="e.g. Rs. 150 - Rs. 500">
-            </div>
-            <div class="form-group">
-                <label for="document_type">Document Type</label>
-                <select id="document_type" name="document_type" required>
-                    <option value="" disabled <%= dType.isEmpty() ? "selected" : "" %>>Select Document Type</option>
-                    <option value="Citizenship" <%= "Citizenship".equals(dType) ? "selected" : "" %>>Citizenship (Nagarikta)</option>
-                    <option value="PAN Card" <%= "PAN Card".equals(dType) ? "selected" : "" %>>PAN / VAT Certificate</option>
-                    <option value="Business License" <%= "Business License".equals(dType) ? "selected" : "" %>>Business Registration License</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="document">Upload Identity/Business Document (PDF/JPG/PNG, Max 2MB)</label>
-                <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
-            </div>
-            
-            <div class="form-span mt-2">
-                <button type="submit" class="btn btn-primary">Submit for Verification</button>
-            </div>
-        </form>
-    </section>
-<% } %>
-
 </body>
 </html>
