@@ -30,32 +30,49 @@ public class AuthenticationFilter implements Filter {
         }
 
         String role = (String) session.getAttribute("userRole");
-        boolean allowed = isAllowed(requestUri, contextPath, role);
+        boolean allowed = isAllowed(httpRequest, requestUri, contextPath, role);
 
         if (!allowed) {
+            System.out.println("AUTH FILTER: Access DENIED for URI " + requestUri + " and Role " + role);
             httpResponse.sendRedirect(contextPath + "/login.jsp?error=unauthorized");
             return;
         }
 
+        System.out.println("AUTH FILTER: Access GRANTED for URI " + requestUri + " and Role " + role);
         chain.doFilter(request, response);
     }
 
-    private boolean isAllowed(String requestUri, String contextPath, String role) {
-        if (requestUri.equals(contextPath + "/admin")
-                || requestUri.equals(contextPath + "/vendors")
-                || requestUri.equals(contextPath + "/services")
-                || requestUri.startsWith(contextPath + "/admin/")) {
+    private boolean isAllowed(HttpServletRequest httpRequest, String requestUri, String contextPath, String role) {
+        // Normalize URI by removing trailing slash if present (except for root context)
+        String path = requestUri.substring(contextPath.length());
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        // Admin paths
+        if (path.equals("/admin") || path.startsWith("/admin/") || path.equals("/services")) {
             return "admin".equals(role);
         }
-        if (requestUri.equals(contextPath + "/bookings")) {
+
+        // Vendors path (admin only, except for ajax-search which users need)
+        if (path.equals("/vendors")) {
+            String action = httpRequest.getParameter("action");
+            if ("ajax-search".equals(action)) {
+                return "user".equals(role) || "admin".equals(role);
+            }
+            return "admin".equals(role);
+        }
+
+        // User paths
+        if (path.equals("/bookings") || path.startsWith("/user/")) {
             return "user".equals(role);
         }
-        if (requestUri.startsWith(contextPath + "/user/")) {
-            return "user".equals(role);
-        }
-        if (requestUri.equals(contextPath + "/vendor") || requestUri.startsWith(contextPath + "/vendor/")) {
+
+        // Vendor paths
+        if (path.equals("/vendor") || path.startsWith("/vendor/")) {
             return "vendor".equals(role);
         }
+
         return false;
     }
 }
