@@ -129,7 +129,16 @@ public class BookingController extends HttpServlet {
 
     private void cancelBooking(HttpServletRequest request, HttpServletResponse response, int userId) throws IOException {
         int bookingId = parseInt(request.getParameter("id"));
-        boolean cancelled = bookingId > 0 && bookingDAO.cancelPendingBooking(bookingId, userId);
+        Booking booking = bookingDAO.getBookingById(bookingId);
+        boolean cancelled = false;
+
+        if (booking != null && booking.getUserId() == userId && "Pending".equals(booking.getBookingStatus())) {
+            cancelled = bookingDAO.cancelPendingBooking(bookingId, userId);
+            if (cancelled) {
+                slotDAO.updateSlotStatus(booking.getSlotId(), booking.getVendorId(), "available");
+            }
+        }
+
         String message = cancelled ? "Pending booking cancelled." : "Only pending bookings can be cancelled.";
         String key = cancelled ? "success" : "error";
         response.sendRedirect(request.getContextPath() + "/bookings?action=my-orders&" + key + "=" + URLEncoder.encode(message, "UTF-8"));

@@ -164,6 +164,14 @@ public class VendorController extends HttpServlet {
         }
 
         boolean updated = bookingId > 0 && bookingDAO.updateBookingStatusForVendor(bookingId, vendor.getVendorId(), status);
+        
+        if (updated && "Cancelled".equals(status)) {
+            Booking booking = bookingDAO.getBookingById(bookingId);
+            if (booking != null) {
+                slotDAO.updateSlotStatus(booking.getSlotId(), vendor.getVendorId(), "available");
+            }
+        }
+        
         redirectVendor(response, request, "orders", updated ? "Booking status updated." : "Unable to update booking status.", !updated);
     }
 
