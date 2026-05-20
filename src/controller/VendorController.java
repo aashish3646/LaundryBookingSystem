@@ -47,12 +47,6 @@ public class VendorController extends HttpServlet {
             case "edit":
                 showEditForm(request, response);
                 break;
-            case "delete":
-                deleteVendor(request, response);
-                break;
-            case "approve":
-                approveVendor(request, response);
-                break;
             case "ajax-search":
                 ajaxSearch(request, response);
                 break;
@@ -74,11 +68,23 @@ public class VendorController extends HttpServlet {
             return;
         }
 
+        HttpSession session = request.getSession(false);
+        String sessionToken = session != null ? (String) session.getAttribute("csrfToken") : null;
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
         String action = getAction(request);
         if ("save".equals(action)) {
             saveVendor(request, response);
         } else if ("reject".equals(action)) {
             rejectVendor(request, response);
+        } else if ("approve".equals(action)) {
+            approveVendor(request, response);
+        } else if ("delete".equals(action)) {
+            deleteVendor(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/vendors?action=list");
         }
@@ -103,9 +109,6 @@ public class VendorController extends HttpServlet {
             case "availability":
                 showAvailability(request, response, vendor);
                 break;
-            case "delete-slot":
-                deleteSlot(request, response, vendor);
-                break;
             default:
                 showVendorDashboard(request, response, vendor);
                 break;
@@ -121,6 +124,13 @@ public class VendorController extends HttpServlet {
             return;
         }
 
+        String sessionToken = session != null ? (String) session.getAttribute("csrfToken") : null;
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
         String action = getAction(request);
         switch (action) {
             case "update-status":
@@ -131,6 +141,9 @@ public class VendorController extends HttpServlet {
                 break;
             case "update-slot":
                 updateSlotStatus(request, response, vendor);
+                break;
+            case "delete-slot":
+                deleteSlot(request, response, vendor);
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/vendor");

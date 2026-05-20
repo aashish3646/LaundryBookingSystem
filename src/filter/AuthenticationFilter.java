@@ -11,9 +11,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @WebFilter({"/admin", "/admin/*", "/vendors", "/services", "/bookings", "/user/*", "/vendor", "/vendor/*"})
 public class AuthenticationFilter implements Filter {
+    private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class.getName());
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -33,12 +36,12 @@ public class AuthenticationFilter implements Filter {
         boolean allowed = isAllowed(httpRequest, requestUri, contextPath, role);
 
         if (!allowed) {
-            System.out.println("AUTH FILTER: Access DENIED for URI " + requestUri + " and Role " + role);
+            LOGGER.info("AUTH FILTER: Access DENIED for URI " + requestUri + " and Role " + role);
             httpResponse.sendRedirect(contextPath + "/login.jsp?error=unauthorized");
             return;
         }
 
-        System.out.println("AUTH FILTER: Access GRANTED for URI " + requestUri + " and Role " + role);
+        LOGGER.info("AUTH FILTER: Access GRANTED for URI " + requestUri + " and Role " + role);
         chain.doFilter(request, response);
     }
 

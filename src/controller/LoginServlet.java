@@ -12,9 +12,13 @@ import model.User;
 import util.ValidationUtil;
 
 import java.io.IOException;
+import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
     private final UserDAO userDAO = new UserDAO();
 
     @Override
@@ -37,14 +41,14 @@ public class LoginServlet extends HttpServlet {
         User user = userDAO.loginUser(email.trim(), password);
 
         if (user == null) {
-            System.out.println("LOGIN FAILED: User not found or inactive for email: " + email);
+            LOGGER.info("LOGIN FAILED: User not found or inactive for email: " + email);
             request.setAttribute("error", "Invalid email or password, or your account is inactive.");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
         if (!"approved".equals(user.getApprovalStatus())) {
-            System.out.println("LOGIN REJECTED: User status is " + user.getApprovalStatus() + " for email: " + email);
+            LOGGER.info("LOGIN REJECTED: User status is " + user.getApprovalStatus() + " for email: " + email);
             String msg = "pending".equals(user.getApprovalStatus()) 
                 ? "Your account is awaiting administrator approval." 
                 : "Your registration request was rejected. Please contact support.";
@@ -53,9 +57,15 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        System.out.println("LOGIN SUCCESS: User " + user.getEmail() + " logged in as " + user.getRole());
+        LOGGER.info("LOGIN SUCCESS: User " + user.getEmail() + " logged in as " + user.getRole());
 
-        HttpSession session = request.getSession();
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+        HttpSession session = request.getSession(true);
+        String csrfToken = UUID.randomUUID().toString();
+        session.setAttribute("csrfToken", csrfToken);
         session.setAttribute("userId", user.getUserId());
         session.setAttribute("userName", user.getName());
         session.setAttribute("userEmail", user.getEmail());

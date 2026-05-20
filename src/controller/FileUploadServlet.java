@@ -30,6 +30,13 @@ public class FileUploadServlet extends HttpServlet {
             return;
         }
 
+        String sessionToken = (String) session.getAttribute("csrfToken");
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
         int userId = (Integer) session.getAttribute("userId");
         Vendor vendor = vendorDAO.getVendorByUserId(userId);
         boolean isNew = (vendor == null);
@@ -41,13 +48,13 @@ public class FileUploadServlet extends HttpServlet {
 
         try {
             // Read form fields
-            vendor.setVendorName(request.getParameter("vendor_name"));
-            vendor.setOwnerName(request.getParameter("owner_name"));
-            vendor.setArea(request.getParameter("area"));
-            vendor.setContact(request.getParameter("contact"));
-            vendor.setServiceType(request.getParameter("service_type"));
-            vendor.setPriceRange(request.getParameter("price_range"));
-            vendor.setDocumentType(request.getParameter("document_type"));
+            vendor.setVendorName(resolveField(request.getParameter("vendor_name"), vendor.getVendorName()));
+            vendor.setOwnerName(resolveField(request.getParameter("owner_name"), vendor.getOwnerName()));
+            vendor.setArea(resolveField(request.getParameter("area"), vendor.getArea()));
+            vendor.setContact(resolveField(request.getParameter("contact"), vendor.getContact()));
+            vendor.setServiceType(resolveField(request.getParameter("service_type"), vendor.getServiceType()));
+            vendor.setPriceRange(resolveField(request.getParameter("price_range"), vendor.getPriceRange()));
+            vendor.setDocumentType(resolveField(request.getParameter("document_type"), vendor.getDocumentType()));
             vendor.setApprovalStatus("pending"); // Reset to pending on resubmission
             vendor.setStatus("active");
 
@@ -116,5 +123,12 @@ public class FileUploadServlet extends HttpServlet {
     private void redirect(HttpServletResponse response, HttpServletRequest request, String message, boolean error) throws IOException {
         String key = error ? "error" : "success";
         response.sendRedirect(request.getContextPath() + "/vendor?action=availability&" + key + "=" + URLEncoder.encode(message, "UTF-8"));
+    }
+
+    private String resolveField(String requestValue, String existingValue) {
+        if (requestValue != null && !requestValue.trim().isEmpty()) {
+            return requestValue.trim();
+        }
+        return existingValue;
     }
 }

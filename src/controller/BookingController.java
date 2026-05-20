@@ -39,9 +39,6 @@ public class BookingController extends HttpServlet {
             case "my-orders":
                 showMyOrders(request, response, userId);
                 break;
-            case "cancel":
-                cancelBooking(request, response, userId);
-                break;
             case "track":
                 showTrackStatus(request, response, userId);
                 break;
@@ -61,9 +58,19 @@ public class BookingController extends HttpServlet {
             return;
         }
 
+        HttpSession session = request.getSession(false);
+        String sessionToken = session != null ? (String) session.getAttribute("csrfToken") : null;
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
         String action = getAction(request);
         if ("create".equals(action)) {
             createBooking(request, response, userId);
+        } else if ("cancel".equals(action)) {
+            cancelBooking(request, response, userId);
         } else {
             response.sendRedirect(request.getContextPath() + "/user/dashboard.jsp");
         }
@@ -106,8 +113,6 @@ public class BookingController extends HttpServlet {
         double totalPrice = service.getPrice() * booking.getQuantity();
         boolean created = bookingDAO.createBooking(booking, totalPrice);
         if (created) {
-            // Mark the slot as booked
-            slotDAO.updateSlotStatus(booking.getSlotId(), booking.getVendorId(), "booked");
             response.sendRedirect(request.getContextPath() + "/bookings?action=my-orders&success=" + URLEncoder.encode("Booking created successfully.", "UTF-8"));
         } else {
             request.setAttribute("error", "Unable to create booking. Please try again.");

@@ -24,7 +24,11 @@ public class ShortlistServlet extends HttpServlet {
             return;
         }
         
-        int vendorId = Integer.parseInt(vendorIdStr);
+        int vendorId = util.ValidationUtil.parseInt(vendorIdStr, 0);
+        if (vendorId <= 0) {
+            response.sendRedirect(request.getContextPath() + "/user/dashboard.jsp");
+            return;
+        }
         HttpSession session = request.getSession();
         List<Integer> shortlist = (List<Integer>) session.getAttribute("shortlist");
         

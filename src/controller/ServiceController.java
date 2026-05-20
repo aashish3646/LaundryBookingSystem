@@ -32,9 +32,6 @@ public class ServiceController extends HttpServlet {
             case "edit":
                 showEditForm(request, response);
                 break;
-            case "delete":
-                deleteService(request, response);
-                break;
             case "list":
             default:
                 showServiceList(request, response);
@@ -49,8 +46,19 @@ public class ServiceController extends HttpServlet {
         }
 
         String action = getAction(request);
+        
+        HttpSession session = request.getSession(false);
+        String sessionToken = session != null ? (String) session.getAttribute("csrfToken") : null;
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
         if ("save".equals(action)) {
             saveService(request, response);
+        } else if ("delete".equals(action)) {
+            deleteService(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/services?action=list");
         }

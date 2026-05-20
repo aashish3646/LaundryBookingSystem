@@ -31,17 +31,39 @@ public class AdminController extends HttpServlet {
             case "users":
                 showUsers(request, response);
                 break;
-            case "toggle-user-status":
-                toggleUserStatus(request, response);
-                break;
-            case "delete-user":
-                deleteUser(request, response);
-                break;
             case "orders":
                 showOrders(request, response);
                 break;
             case "reports":
                 showReports(request, response);
+                break;
+            default:
+                showDashboard(request, response);
+                break;
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!isAdmin(request, response)) {
+            return;
+        }
+
+        HttpSession session = request.getSession(false);
+        String sessionToken = session != null ? (String) session.getAttribute("csrfToken") : null;
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
+        String action = getAction(request);
+        switch (action) {
+            case "toggle-user-status":
+                toggleUserStatus(request, response);
+                break;
+            case "delete-user":
+                deleteUser(request, response);
                 break;
             case "approve-user":
                 approveUser(request, response);
@@ -50,7 +72,7 @@ public class AdminController extends HttpServlet {
                 rejectUser(request, response);
                 break;
             default:
-                showDashboard(request, response);
+                response.sendRedirect(request.getContextPath() + "/admin");
                 break;
         }
     }

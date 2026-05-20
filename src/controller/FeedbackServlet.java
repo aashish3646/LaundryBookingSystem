@@ -30,9 +30,16 @@ public class FeedbackServlet extends HttpServlet {
             return;
         }
 
+        String sessionToken = (String) session.getAttribute("csrfToken");
+        String requestToken = request.getParameter("csrf_token");
+        if (sessionToken == null || !sessionToken.equals(requestToken)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token.");
+            return;
+        }
+
         int userId = (Integer) session.getAttribute("userId");
-        int bookingId = Integer.parseInt(request.getParameter("booking_id"));
-        int rating = Integer.parseInt(request.getParameter("rating"));
+        int bookingId = util.ValidationUtil.parseInt(request.getParameter("booking_id"), 0);
+        int rating = util.ValidationUtil.parseInt(request.getParameter("rating"), 0);
         String comment = request.getParameter("comment");
 
         boolean success = feedbackDAO.submitFeedback(userId, bookingId, rating, comment);
