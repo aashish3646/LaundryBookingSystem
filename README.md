@@ -89,3 +89,9 @@ src/model/      Java model classes
 src/util/       Utility classes
 web/            JSP pages, CSS, images, WEB-INF configuration, and libraries
 ```
+
+## Future Enhancements
+- Email notifications for booking updates
+- Online payment gateway integration
+- Mobile application for users
+- Real-time chat support
