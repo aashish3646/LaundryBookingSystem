@@ -52,6 +52,7 @@
     <section class="form-card wide">
         <% if (error != null) { %><div class="alert alert-error"><%= error %></div><% } %>
         <form action="<%= contextPath %>/bookings?action=create" method="post" class="form two-column">
+            <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
             <div>
                 <label for="vendor_id">Vendor</label>
                 <select id="vendor_id" name="vendor_id" required>

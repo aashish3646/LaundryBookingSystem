@@ -80,7 +80,11 @@
                     <td>
                         <div class="table-actions">
                             <% if ("Pending".equals(booking.getBookingStatus())) { %>
-                                <a class="btn btn-danger btn-small" href="<%= contextPath %>/bookings?action=cancel&id=<%= booking.getBookingId() %>" onclick="return confirm('Cancel this pending booking?');">Cancel</a>
+                                <form action="<%= contextPath %>/bookings?action=cancel" method="POST" style="display:inline;" onsubmit="return confirm('Cancel this pending booking?');">
+                                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                    <input type="hidden" name="id" value="<%= booking.getBookingId() %>">
+                                    <button type="submit" class="btn btn-danger btn-small">Cancel</button>
+                                </form>
                             <% } %>
                             <% if ("Delivered".equals(booking.getBookingStatus())) { %>
                                 <a class="btn btn-primary btn-small" href="<%= contextPath %>/feedback?booking_id=<%= booking.getBookingId() %>">Rate Service</a>

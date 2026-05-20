@@ -29,6 +29,7 @@
 
     <section class="card p-4" style="max-width: 600px; margin: auto;">
         <form action="<%= contextPath %>/feedback" method="post">
+            <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
             <input type="hidden" name="booking_id" value="<%= request.getAttribute("bookingId") %>">
             
             <div class="form-group mb-2">
