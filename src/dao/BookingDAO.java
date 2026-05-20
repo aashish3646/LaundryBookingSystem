@@ -8,8 +8,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class BookingDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(BookingDAO.class.getName());
 
     public List<Booking> getAllBookings() {
         List<Booking> bookings = new ArrayList<>();
@@ -31,7 +35,7 @@ public class BookingDAO {
                 bookings.add(mapBooking(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in getAllBookings", e);
         }
 
         return bookings;
@@ -60,7 +64,7 @@ public class BookingDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in getBookingsByUserId", e);
         }
 
         return bookings;
@@ -89,32 +93,80 @@ public class BookingDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in getBookingsByVendorId", e);
         }
 
         return bookings;
     }
 
     public boolean createBooking(Booking booking, double totalPrice) {
-        String sql = "INSERT INTO bookings (user_id, vendor_id, service_id, slot_id, clothes_type, quantity, pickup_address, pickup_note, total_price, booking_status) "
+        String lockSlotSql = "SELECT availability_status FROM slots WHERE slot_id = ? AND vendor_id = ? FOR UPDATE";
+        String updateSlotSql = "UPDATE slots SET availability_status = 'booked' WHERE slot_id = ?";
+        String insertBookingSql = "INSERT INTO bookings (user_id, vendor_id, service_id, slot_id, clothes_type, quantity, pickup_address, pickup_note, total_price, booking_status) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
 
-            ps.setInt(1, booking.getUserId());
-            ps.setInt(2, booking.getVendorId());
-            ps.setInt(3, booking.getServiceId());
-            ps.setInt(4, booking.getSlotId());
-            ps.setString(5, booking.getClothesType());
-            ps.setInt(6, booking.getQuantity());
-            ps.setString(7, booking.getPickupAddress());
-            ps.setString(8, booking.getPickupNote());
-            ps.setDouble(9, totalPrice);
-            return ps.executeUpdate() > 0;
+            try (PreparedStatement lockPs = conn.prepareStatement(lockSlotSql)) {
+                lockPs.setInt(1, booking.getSlotId());
+                lockPs.setInt(2, booking.getVendorId());
+                try (ResultSet rs = lockPs.executeQuery()) {
+                    if (!rs.next() || !"available".equals(rs.getString("availability_status"))) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+            }
+
+            try (PreparedStatement updatePs = conn.prepareStatement(updateSlotSql)) {
+                updatePs.setInt(1, booking.getSlotId());
+                if (updatePs.executeUpdate() <= 0) {
+                    conn.rollback();
+                    return false;
+                }
+            }
+
+            try (PreparedStatement insertPs = conn.prepareStatement(insertBookingSql)) {
+                insertPs.setInt(1, booking.getUserId());
+                insertPs.setInt(2, booking.getVendorId());
+                insertPs.setInt(3, booking.getServiceId());
+                insertPs.setInt(4, booking.getSlotId());
+                insertPs.setString(5, booking.getClothesType());
+                insertPs.setInt(6, booking.getQuantity());
+                insertPs.setString(7, booking.getPickupAddress());
+                insertPs.setString(8, booking.getPickupNote());
+                insertPs.setDouble(9, totalPrice);
+                if (insertPs.executeUpdate() <= 0) {
+                    conn.rollback();
+                    return false;
+                }
+            }
+
+            conn.commit();
+            return true;
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in createBooking transaction", e);
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error during rollback in createBooking", ex);
+                }
+            }
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection in createBooking", e);
+                }
+            }
         }
     }
 
@@ -128,7 +180,7 @@ public class BookingDAO {
             ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in cancelPendingBooking", e);
             return false;
         }
     }
@@ -144,7 +196,7 @@ public class BookingDAO {
             ps.setInt(3, vendorId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in updateBookingStatusForVendor", e);
             return false;
         }
     }
@@ -170,7 +222,7 @@ public class BookingDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in countInProgressBookingsByVendor", e);
         }
 
         return 0;
@@ -194,7 +246,7 @@ public class BookingDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in countByVendor", e);
         }
 
         return 0;
@@ -211,7 +263,7 @@ public class BookingDAO {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in countBookings", e);
         }
 
         return 0;
@@ -226,7 +278,7 @@ public class BookingDAO {
                 if (rs.next()) return rs.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in countByStatus", e);
         }
         return 0;
     }
@@ -238,7 +290,7 @@ public class BookingDAO {
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) return rs.getDouble(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in countRevenue", e);
         }
         return 0.0;
     }
@@ -263,7 +315,7 @@ public class BookingDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in getBookingById", e);
         }
         return null;
     }

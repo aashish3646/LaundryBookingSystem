@@ -9,8 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class UserDAO {
+
+    private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
     public boolean emailExists(String email) {
         String sql = "SELECT user_id FROM users WHERE email = ?";
@@ -23,7 +27,7 @@ public class UserDAO {
                 return rs.next();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in emailExists", e);
             return false;
         }
     }
@@ -44,7 +48,7 @@ public class UserDAO {
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in registerUser", e);
             return false;
         }
     }
@@ -61,6 +65,10 @@ public class UserDAO {
                 if (rs.next()) {
                     String storedHash = rs.getString("password");
                     if (PasswordUtil.verifyPassword(password, storedHash)) {
+                        int userId = rs.getInt("user_id");
+                        if (PasswordUtil.needsRehash(storedHash)) {
+                            updatePassword(userId, PasswordUtil.hashPassword(password));
+                        }
                         User user = mapUser(rs);
                         user.setPassword(null);
                         return user;
@@ -68,10 +76,23 @@ public class UserDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in loginUser", e);
         }
 
         return null;
+    }
+
+    public boolean updatePassword(int userId, String newPasswordHash) {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPasswordHash);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error in updatePassword", e);
+            return false;
+        }
     }
 
     public User getUserById(int userId) {
@@ -88,7 +109,7 @@ public class UserDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in getUserById", e);
         }
 
         return null;
@@ -106,7 +127,7 @@ public class UserDAO {
                 users.add(mapUser(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in getAllUsers", e);
         }
 
         return users;
@@ -122,7 +143,7 @@ public class UserDAO {
             ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in updateApprovalStatus", e);
             return false;
         }
     }
@@ -136,7 +157,7 @@ public class UserDAO {
             ps.setInt(1, userId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in toggleUserStatus", e);
             return false;
         }
     }
@@ -150,7 +171,7 @@ public class UserDAO {
             ps.setInt(1, userId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in deleteUser", e);
             return false;
         }
     }
@@ -169,7 +190,7 @@ public class UserDAO {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error in count", e);
         }
 
         return 0;
