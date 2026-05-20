@@ -32,4 +32,20 @@ public class ValidationUtil {
     public static boolean isPositiveInteger(int number) {
         return number > 0;
     }
+
+    public static int parseInt(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException | NullPointerException e) {
+            return defaultValue;
+        }
+    }
+
+    public static double parseDouble(String value, double defaultValue) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException | NullPointerException e) {
+            return defaultValue;
+        }
+    }
 }

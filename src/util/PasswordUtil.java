@@ -1,5 +1,7 @@
 package util;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,7 +12,35 @@ public class PasswordUtil {
         if (password == null) {
             return "";
         }
+        return BCrypt.hashpw(password, BCrypt.gensalt(12));
+    }
 
+    public static boolean verifyPassword(String inputPassword, String storedHash) {
+        if (inputPassword == null || storedHash == null || storedHash.isEmpty()) {
+            return false;
+        }
+
+        if (isLegacyHash(storedHash)) {
+            String inputHash = hashLegacyPassword(inputPassword);
+            return inputHash.equalsIgnoreCase(storedHash);
+        }
+
+        try {
+            return BCrypt.checkpw(inputPassword, storedHash);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public static boolean needsRehash(String storedHash) {
+        return storedHash != null && !storedHash.isEmpty() && isLegacyHash(storedHash);
+    }
+
+    private static boolean isLegacyHash(String hash) {
+        return !hash.startsWith("$2a$") && !hash.startsWith("$2b$") && !hash.startsWith("$2y$");
+    }
+
+    private static String hashLegacyPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedHash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -18,15 +48,6 @@ public class PasswordUtil {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 algorithm is not available.", e);
         }
-    }
-
-    public static boolean verifyPassword(String inputPassword, String storedHash) {
-        if (inputPassword == null || storedHash == null) {
-            return false;
-        }
-
-        String inputHash = hashPassword(inputPassword);
-        return inputHash.equalsIgnoreCase(storedHash);
     }
 
     private static String bytesToHex(byte[] bytes) {
