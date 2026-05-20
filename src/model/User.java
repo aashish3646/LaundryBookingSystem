@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Represents a user in the Laundry Booking System.
+ * This class stores user credentials, profile information, and system roles.
+ * Users can be customers (user), service providers (vendor), or administrators (admin).
+ */
 public class User {
     private int userId;
     private String name;
