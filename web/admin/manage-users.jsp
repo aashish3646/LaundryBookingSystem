@@ -85,12 +85,28 @@
                             <td><small><%= user.getCreatedAt() %></small></td>
                             <td class="table-actions">
                                 <% if ("pending".equals(user.getApprovalStatus())) { %>
-                                    <a class="btn btn-primary btn-small" href="<%= contextPath %>/admin?action=approve-user&id=<%= user.getUserId() %>">Approve</a>
-                                    <a class="btn btn-danger btn-small" href="<%= contextPath %>/admin?action=reject-user&id=<%= user.getUserId() %>">Reject</a>
+                                    <form action="<%= contextPath %>/admin?action=approve-user" method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                        <input type="hidden" name="id" value="<%= user.getUserId() %>">
+                                        <button type="submit" class="btn btn-primary btn-small">Approve</button>
+                                    </form>
+                                    <form action="<%= contextPath %>/admin?action=reject-user" method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                        <input type="hidden" name="id" value="<%= user.getUserId() %>">
+                                        <button type="submit" class="btn btn-danger btn-small">Reject</button>
+                                    </form>
                                 <% } else { %>
-                                    <a class="btn btn-secondary btn-small" href="<%= contextPath %>/admin?action=toggle-user-status&id=<%= user.getUserId() %>"><%= "active".equals(user.getStatus()) ? "Deactivate" : "Activate" %></a>
+                                    <form action="<%= contextPath %>/admin?action=toggle-user-status" method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                        <input type="hidden" name="id" value="<%= user.getUserId() %>">
+                                        <button type="submit" class="btn btn-secondary btn-small"><%= "active".equals(user.getStatus()) ? "Deactivate" : "Activate" %></button>
+                                    </form>
                                     <% if (!isCurrentAdmin) { %>
-                                        <a class="btn btn-danger btn-small" href="<%= contextPath %>/admin?action=delete-user&id=<%= user.getUserId() %>" onclick="return confirm('Delete this user?');">Delete</a>
+                                        <form action="<%= contextPath %>/admin?action=delete-user" method="POST" style="display:inline;" onsubmit="return confirm('Delete this user?');">
+                                            <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                            <input type="hidden" name="id" value="<%= user.getUserId() %>">
+                                            <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                                        </form>
                                     <% } %>
                                 <% } %>
                             </td>

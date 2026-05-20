@@ -73,6 +73,7 @@
                             <td><%= booking.getCreatedAt() %></td>
                             <td>
                                 <form action="<%= contextPath %>/vendor?action=update-status" method="post" class="inline-form">
+                                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
                                     <input type="hidden" name="booking_id" value="<%= booking.getBookingId() %>">
                                     <select name="status" required>
                                         <option value="Accepted">Accepted</option>

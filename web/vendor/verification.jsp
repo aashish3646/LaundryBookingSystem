@@ -85,6 +85,7 @@
                 <section class="form-card wide">
                     <h2>Verification Details</h2>
                     <form action="<%= contextPath %>/vendor/upload-document" method="post" enctype="multipart/form-data" class="form two-column">
+                        <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
                         <div class="form-group">
                             <label for="vendor_name">Laundry Business Name</label>
                             <input type="text" id="vendor_name" name="vendor_name" value="<%= vName %>" required placeholder="e.g. Nischal Fresh Wash">

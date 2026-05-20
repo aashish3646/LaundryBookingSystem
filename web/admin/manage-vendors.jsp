@@ -95,13 +95,21 @@
                             <td class="table-actions">
                                 <div class="action-stack">
                                     <% if ("pending".equals(v.getApprovalStatus()) || "rejected".equals(v.getApprovalStatus())) { %>
-                                        <a class="btn btn-primary btn-small" href="<%= contextPath %>/vendors?action=approve&id=<%= v.getVendorId() %>">Approve</a>
+                                        <form action="<%= contextPath %>/vendors?action=approve" method="POST" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                            <input type="hidden" name="id" value="<%= v.getVendorId() %>">
+                                            <button type="submit" class="btn btn-primary btn-small">Approve</button>
+                                        </form>
                                     <% } %>
                                     <% if ("pending".equals(v.getApprovalStatus()) || "approved".equals(v.getApprovalStatus())) { %>
                                         <button class="btn btn-danger btn-small" onclick="showRejectModal(<%= v.getVendorId() %>, '<%= v.getVendorName() %>')">Reject</button>
                                     <% } %>
                                     <a class="btn btn-secondary btn-small" href="<%= contextPath %>/vendors?action=edit&id=<%= v.getVendorId() %>">Edit</a>
-                                    <a class="btn btn-danger btn-small" href="<%= contextPath %>/vendors?action=delete&id=<%= v.getVendorId() %>" onclick="return confirm('Permanently delete this vendor?');">Delete</a>
+                                    <form action="<%= contextPath %>/vendors?action=delete" method="POST" style="display:inline;" onsubmit="return confirm('Permanently delete this vendor?');">
+                                        <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                        <input type="hidden" name="id" value="<%= v.getVendorId() %>">
+                                        <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -118,6 +126,7 @@
     <div class="modal-content">
         <h3>Reject Vendor: <span id="rejectVendorName"></span></h3>
         <form action="<%= contextPath %>/vendors?action=reject" method="post" class="form">
+            <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
             <input type="hidden" name="vendor_id" id="rejectVendorId">
             <div class="form-group">
                 <label for="admin_remarks">Rejection Remarks</label>

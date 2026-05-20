@@ -43,6 +43,7 @@
             <section class="form-card wide">
                 <h2>Add Slot</h2>
                 <form action="<%= contextPath %>/vendor?action=add-slot" method="post" class="form two-column">
+                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
                     <div>
                         <label for="slot_date">Slot Date</label>
                         <input type="date" id="slot_date" name="slot_date" required>
@@ -73,6 +74,7 @@
                     </div>
                 <% } %>
                 <form action="<%= contextPath %>/vendor/upload-document" method="post" enctype="multipart/form-data" class="form upload-form">
+                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
                     <div>
                         <label for="document">Upload document</label>
                         <input class="file-input" type="file" id="document" name="document" accept=".jpg,.jpeg,.png,.pdf" required>
@@ -99,6 +101,7 @@
                             <td><span class="badge <%= "available".equals(slot.getAvailabilityStatus()) ? "badge-green" : "booked".equals(slot.getAvailabilityStatus()) ? "badge-blue" : "badge-grey" %>"><%= slot.getAvailabilityStatus() %></span></td>
                             <td>
                                 <form action="<%= contextPath %>/vendor?action=update-slot" method="post" class="inline-form">
+                                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
                                     <input type="hidden" name="slot_id" value="<%= slot.getSlotId() %>">
                                     <select name="availability_status" required>
                                         <option value="available" <%= "available".equals(slot.getAvailabilityStatus()) ? "selected" : "" %>>Available</option>
@@ -108,7 +111,13 @@
                                     <button type="submit" class="btn btn-secondary btn-small">Update</button>
                                 </form>
                             </td>
-                            <td><a class="btn btn-danger btn-small" href="<%= contextPath %>/vendor?action=delete-slot&id=<%= slot.getSlotId() %>" onclick="return confirm('Delete this slot?');">Delete</a></td>
+                            <td>
+                                <form action="<%= contextPath %>/vendor?action=delete-slot" method="POST" style="display:inline;" onsubmit="return confirm('Delete this slot?');">
+                                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                    <input type="hidden" name="id" value="<%= slot.getSlotId() %>">
+                                    <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     <% } } %>
                     </tbody>

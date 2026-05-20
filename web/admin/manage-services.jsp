@@ -66,7 +66,11 @@
                             <td><span class="badge <%= "active".equals(service.getStatus()) ? "badge-green" : "badge-amber" %>"><%= service.getStatus() %></span></td>
                             <td class="table-actions">
                                 <a class="btn btn-secondary btn-small" href="<%= contextPath %>/services?action=edit&id=<%= service.getServiceId() %>">Edit</a>
-                                <a class="btn btn-danger btn-small" href="<%= contextPath %>/services?action=delete&id=<%= service.getServiceId() %>" onclick="return confirm('Delete this service?');">Delete</a>
+                                <form action="<%= contextPath %>/services?action=delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this service?');">
+                                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
+                                    <input type="hidden" name="id" value="<%= service.getServiceId() %>">
+                                    <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     <% } } %>

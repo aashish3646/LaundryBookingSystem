@@ -42,6 +42,7 @@
             <section class="form-card wide">
                 <% if (error != null) { %><div class="alert alert-error"><%= error %></div><% } %>
                 <form action="<%= contextPath %>/vendors?action=save" method="post" class="form two-column">
+                    <input type="hidden" name="csrf_token" value="<%= session.getAttribute("csrfToken") %>">
                     <input type="hidden" name="vendor_id" value="<%= vendor.getVendorId() %>">
 
                     <div>
