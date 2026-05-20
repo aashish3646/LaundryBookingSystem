@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Slot;
 import model.Vendor;
+import model.Booking;
 
 import java.io.IOException;
 import java.net.URLEncoder;
