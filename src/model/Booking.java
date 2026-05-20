@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Represents a laundry service booking in the system.
+ * It contains details about the customer, selected vendor, service type, 
+ * pickup address, and the current status of the order.
+ */
 public class Booking {
     private int bookingId;
     private int userId;
