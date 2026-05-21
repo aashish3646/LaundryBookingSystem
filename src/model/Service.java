@@ -1,5 +1,9 @@
 package model;
 
+/**
+ * Represents a type of laundry service offered in the system.
+ * This includes details like the service name, description, and base pricing.
+ */
 public class Service {
     private int serviceId;
     private String serviceName;
