@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Represents a specific time slot defined by a Vendor.
+ * Time slots are used to schedule pickup times for laundry bookings
+ * and manage vendor availability.
+ */
 public class Slot {
     private int slotId;
     private int vendorId;
