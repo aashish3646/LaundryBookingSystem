@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Represents a service provider (Vendor) in the system.
+ * Vendors offer laundry services, manage their operating areas,
+ * and track their verification and approval status.
+ */
 public class Vendor {
     private int vendorId;
     private Integer userId;
